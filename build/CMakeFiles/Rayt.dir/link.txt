@@ -1,0 +1,1 @@
+/usr/lib64/ccache/c++ -Wl,--dependency-file=CMakeFiles/Rayt.dir/link.d CMakeFiles/Rayt.dir/main.cc.o -o Rayt

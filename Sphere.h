@@ -1,0 +1,48 @@
+#ifndef SPHERE_H
+#define SPHERE_H
+
+#include "Hittable.h"
+#include "Vector.h"
+#include "Ray.h"
+#include <algorithm>
+#include <cmath>
+
+class Sphere : public Hittable{
+    private:
+        Vector center;
+        float ratio;
+        Vector color;
+    public:
+        Sphere(const Vector& _center, float _ratio, const Vector& _color): Hittable(_center, _color){
+            center = _center;
+            ratio = _ratio;
+            color = _color;
+        }
+        Vector getCenter() const override{
+            return center;
+        }
+        float getRatio() const {
+            return ratio;
+        }
+        Vector getColor() const override{
+            return color;
+        }
+        float hit(const Ray& ray) const override{
+            auto a  = ray.getDirection().length_squared();
+            auto b =  -2 * dot(ray.getDirection(),(center - ray.getOrigin()));
+            auto c = (center - ray.getOrigin()).length_squared() - ratio * ratio;
+            auto discri = b * b - (4 * a * c);
+            if (discri < 0){
+                return -10;
+            }
+            float r = std::sqrt(discri);
+            float t1 = (-b + r) / 2*(a);
+            float t2 = (-b - r)/ 2*(a);
+            return std::min(t1,t2);
+        }
+        Vector getNormal(const Vector& hit_point) const override{
+            return (hit_point - center)/ratio;
+        }
+};
+
+#endif

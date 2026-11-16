@@ -1,0 +1,3 @@
+/home/juan/spractice/POO/RayTracer/build/CMakeFiles/Rayt.dir
+/home/juan/spractice/POO/RayTracer/build/CMakeFiles/edit_cache.dir
+/home/juan/spractice/POO/RayTracer/build/CMakeFiles/rebuild_cache.dir
