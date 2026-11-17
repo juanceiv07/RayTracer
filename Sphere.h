@@ -9,9 +9,7 @@
 
 class Sphere : public Hittable{
     private:
-        Vector center;
         float ratio;
-        Vector color;
     public:
         Sphere(const Vector& _center, float _ratio, const Vector& _color): Hittable(_center, _color){
             center = _center;
@@ -31,14 +29,13 @@ class Sphere : public Hittable{
             auto a  = ray.getDirection().length_squared();
             auto b =  -2 * dot(ray.getDirection(),(center - ray.getOrigin()));
             auto c = (center - ray.getOrigin()).length_squared() - ratio * ratio;
-            auto discri = b * b - (4 * a * c);
+            auto discri = b * b - (4.0 * a * c);
             if (discri < 0){
                 return -10;
             }
             float r = std::sqrt(discri);
-            float t1 = (-b + r) / 2*(a);
-            float t2 = (-b - r)/ 2*(a);
-            return std::min(t1,t2);
+            float t2 = (-b - r)/ (2.0 * a);
+            return t2;
         }
         Vector getNormal(const Vector& hit_point) const override{
             return (hit_point - center)/ratio;

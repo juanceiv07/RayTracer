@@ -18,23 +18,26 @@ Vector ray_color(const Ray& r, Hittable* const arr[], int num) {
         }
     }
     if (nearest){
-        return nearest->getColor();
+        Vector hit_point = r.getOrigin() + t_min * r.getDirection();
+        Vector normal = unit_vector(nearest->getNormal(hit_point));
+        return 0.5*Vector(normal.getY()+1, normal.getY()+1, normal.getZ()+1);
+        //return nearest->getColor();
     }
     Vector unit_direction = unit_vector(r.getDirection());
-    auto a = 0.5*(unit_direction.getY() + 1.0);
-    return (1.0-a)*Vector(1.0, 1.0, 1.0) + a*Vector(0.2, 0.2, 1.0);
+    auto a = 0.5*(-unit_direction.getY() + 1.0);
+    return (1.0-a) * Vector(1.0, 1.0, 1.0) + a * Vector(0.1, 0.1, 1.0);
 }
 
 int main(){
     auto aspect_ratio = 16.0 / 9.0;
-    int width = 400;
+    int width = 1000;
     int height = std::max(int(width/aspect_ratio),1);
     std::cout << "P3\n" << width << ' ' << height << "\n255\n";
     auto viewport_height = 2.0;
     auto viewport_width  = viewport_height * (double(width) / height);
     Hittable* hittables[2];
-    auto sphere1 =  Sphere(Vector(0,0,-10),0.5,Vector(1,0,0));
-    auto sphere2 =  Sphere(Vector(10,0,-20),2,Vector(0,1,0));
+    auto sphere1 = Sphere(Vector(0,0,-10),1,Vector(1,0,0));
+    auto sphere2 = Sphere(Vector(-10,0,-20),3,Vector(0,1,0));
     hittables[0] = &sphere1;
     hittables[1] = &sphere2;
     Camera Cam = Camera(Vector(0,0,0), 2.0, viewport_height, viewport_width, width, height);

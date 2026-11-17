@@ -6,30 +6,30 @@
 
 class  Vector{
   public:
-    double e[3];
+    double coor[3];
 
-    Vector() : e{0,0,0} {}
-    Vector(double e0, double e1, double e2) : e{e0, e1, e2} {}
+    Vector() : coor{0,0,0} {}
+    Vector(double co0, double co1, double co2) : coor{co0, co1, co2} {}
 
-    double getX() const { return e[0]; }
-    double getY() const { return e[1]; }
-    double getZ() const { return e[2]; }
+    double getX() const { return coor[0]; }
+    double getY() const { return coor[1]; }
+    double getZ() const { return coor[2]; }
 
-    Vector operator-() const { return Vector(-e[0], -e[1], -e[2]); }
-    double operator[](int i) const { return e[i]; }
-    double& operator[](int i) { return e[i]; }
+    Vector operator-() const { return Vector(-coor[0], -coor[1], -coor[2]); }
+    double operator[](int i) const { return coor[i]; }
+    double& operator[](int i) { return coor[i]; }
 
     Vector& operator+=(const Vector& v) {
-        e[0] += v.e[0];
-        e[1] += v.e[1];
-        e[2] += v.e[2];
+        coor[0] += v.coor[0];
+        coor[1] += v.coor[1];
+        coor[2] += v.coor[2];
         return *this;
     }
 
     Vector& operator*=(double t) {
-        e[0] *= t;
-        e[1] *= t;
-        e[2] *= t;
+        coor[0] *= t;
+        coor[1] *= t;
+        coor[2] *= t;
         return *this;
     }
 
@@ -42,27 +42,27 @@ class  Vector{
     }
 
     double length_squared() const {
-        return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
+        return coor[0]*coor[0] + coor[1]*coor[1] + coor[2]*coor[2];
     }
 };
 inline std::ostream& operator<<(std::ostream& out, const Vector& v) {
-    return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
+    return out << v.coor[0] << ' ' << v.coor[1] << ' ' << v.coor[2];
 }
 
 inline Vector operator+(const Vector& u, const Vector& v) {
-    return Vector(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]);
+    return Vector(u.coor[0] + v.coor[0], u.coor[1] + v.coor[1], u.coor[2] + v.coor[2]);
 }
 
 inline Vector operator-(const Vector& u, const Vector& v) {
-    return Vector(u.e[0] - v.e[0], u.e[1] - v.e[1], u.e[2] - v.e[2]);
+    return Vector(u.coor[0] - v.coor[0], u.coor[1] - v.coor[1], u.coor[2] - v.coor[2]);
 }
 
 inline Vector operator*(const Vector& u, const Vector& v) {
-    return Vector(u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2]);
+    return Vector(u.coor[0] * v.coor[0], u.coor[1] * v.coor[1], u.coor[2] * v.coor[2]);
 }
 
 inline Vector operator*(double t, const Vector& v) {
-    return Vector(t*v.e[0], t*v.e[1], t*v.e[2]);
+    return Vector(t*v.coor[0], t*v.coor[1], t*v.coor[2]);
 }
 
 inline Vector operator*(const Vector& v, double t) {
@@ -74,15 +74,15 @@ inline Vector operator/(const Vector& v, double t) {
 }
 
 inline double dot(const Vector& u, const Vector& v) {
-    return u.e[0] * v.e[0]
-         + u.e[1] * v.e[1]
-         + u.e[2] * v.e[2];
+    return u.coor[0] * v.coor[0]
+         + u.coor[1] * v.coor[1]
+         + u.coor[2] * v.coor[2];
 }
 
 inline Vector cross(const Vector& u, const Vector& v) {
-    return Vector(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-                u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                u.e[0] * v.e[1] - u.e[1] * v.e[0]);
+    return Vector(u.coor[1] * v.coor[2] - u.coor[2] * v.coor[1],
+                u.coor[2] * v.coor[0] - u.coor[0] * v.coor[2],
+                u.coor[0] * v.coor[1] - u.coor[1] * v.coor[0]);
 }
 
 inline Vector unit_vector(const Vector& v) {

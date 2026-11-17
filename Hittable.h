@@ -6,6 +6,7 @@
 
 
 class Hittable{
+    protected:
     Vector center;
     Vector color;
     public:
