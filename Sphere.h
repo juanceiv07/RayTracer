@@ -12,7 +12,7 @@ class Sphere : public Hittable{
         float ratio;
     public:
         Sphere(const Vector& _center, float _ratio, const Vector& _color): Hittable(_center, _color){
-            center = _center;
+            center = _center + Vector(0,_ratio,0);
             ratio = _ratio;
             color = _color;
         }

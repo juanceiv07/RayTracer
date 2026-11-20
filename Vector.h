@@ -3,6 +3,9 @@
 
 #include <cmath>
 #include <iostream>
+#include <random>
+#include "Utillities.h"
+#include <float.h>
 
 class  Vector{
   public:
@@ -44,6 +47,13 @@ class  Vector{
     double length_squared() const {
         return coor[0]*coor[0] + coor[1]*coor[1] + coor[2]*coor[2];
     }
+    static Vector random() {
+            return Vector(random_double(), random_double(), random_double());
+        }
+
+    static Vector random(double min, double max) {
+            return Vector(random_double(min,max), random_double(min,max), random_double(min,max));
+        }
 };
 inline std::ostream& operator<<(std::ostream& out, const Vector& v) {
     return out << v.coor[0] << ' ' << v.coor[1] << ' ' << v.coor[2];
@@ -88,11 +98,15 @@ inline Vector cross(const Vector& u, const Vector& v) {
 inline Vector unit_vector(const Vector& v) {
     return v / v.length();
 }
-
-void write_color(std::ostream& out, const Vector& pixel_color) {
+inline void write_color(std::ostream& out, const Vector& pixel_color) {
     auto r = pixel_color.getX();
     auto g = pixel_color.getY();
     auto b = pixel_color.getZ();
+
+    r = sqrt(r);
+    g = sqrt(g);
+    b = sqrt(b);
+
     int rbyte = int(255.999 * r);
     int gbyte = int(255.999 * g);
     int bbyte = int(255.999 * b);
