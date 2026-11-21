@@ -2,6 +2,7 @@
 #define WALL_H
 
 #include "Hittable.h"
+#include "Mate.h"
 #include "Material.h"
 #include "Ray.h"
 #include "Vector.h"
@@ -18,7 +19,7 @@ class Wall : public Hittable{
     Ray ray2;
     std::string type;
     //Center --> vertex
-    Wall(float w, float l, Vector p, std::string pos, Vector color, std::shared_ptr<Material> material): Hittable(p, color, material){
+    Wall(float w, float l, Vector p, std::string pos, Vector color, Mate material): Hittable(p, color, material){
         width = w;
         lenght = l;
         if (pos == "floor"){
@@ -56,10 +57,10 @@ class Wall : public Hittable{
         return d;
     }
     Vector getNormal(const Vector& hit_point) const override{
-        return Vector(1,1,1);
+        return cross(ray1.getDirection(), ray2.getDirection());
     }
-    virtual std::shared_ptr<Material> getMaterial() const override{
-        return material;
+    Mate getMaterial() const override{
+        return mater;
     }
 
 //color = ((dis1 + dis2) % 2 == 0) ? Vector(0.9, 0.9, 0.9) : Vector(0.2, 0.2, 0.2);

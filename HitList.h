@@ -28,11 +28,6 @@ class HitList{
                   nearest = hittables.at(i);
               }
           }
-          if (nearest){
-              Vector hit_point = r.getOrigin() + t_min * r.getDirection();
-              Vector normal = unit_vector(nearest->getNormal(hit_point));
-              //return 0.5*Vector(normal.getY()+1, normal.getY()+1, normal.getZ()+1);
-          }
           return nearest;
       }
 

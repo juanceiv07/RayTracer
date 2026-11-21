@@ -1,6 +1,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <random>
@@ -99,9 +100,12 @@ inline Vector unit_vector(const Vector& v) {
     return v / v.length();
 }
 inline void write_color(std::ostream& out, const Vector& pixel_color) {
-    auto r = pixel_color.getX();
-    auto g = pixel_color.getY();
-    auto b = pixel_color.getZ();
+    auto x = pixel_color.getX();
+    auto y = pixel_color.getY();
+    auto z = pixel_color.getZ();
+    auto r = x > 1 ? 1: x;
+    auto g = y > 1 ? 1: y;
+    auto b = z > 1 ? 1: z;
 
     r = sqrt(r);
     g = sqrt(g);

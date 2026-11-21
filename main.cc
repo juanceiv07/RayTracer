@@ -25,13 +25,14 @@ Vector ray_color(const Ray& r, HitList list, Light& light) {
     }
     auto t = result->hit(r);
     Vector intersec = r.getOrigin() + t * r.getDirection();
-    Ray shadow = Ray(intersec, light.getPos());
+    Ray shadow = Ray(intersec, light.getPos()- intersec);
     auto material = (result->getMaterial());
-    auto k = material->shading(light.getPos(), intersec, result->getNormal(intersec));
-    if(list.SendRay(shadow)){
-         return result->getColor()*0.3 * (Vector(1,1,1)*k);
+    auto final = material.shading(r, shadow, result->getColor(), intersec, result->getNormal(intersec), light.getColor(), light.getIntensity());
+    auto block = list.SendRay(shadow);
+    if(block && block != light.getForm()){
+         return 0.2 * final;
     }
-    return result->getColor() * (Vector(1,1,1)*k) ;
+    return final ;
 }
 
 int main(){
@@ -44,15 +45,23 @@ int main(){
     auto viewport_width  = viewport_height * (double(width) / height);
     Camera Cam = Camera(Vector(0,2,0), 2, viewport_height, viewport_width, width, height);
 
-    Light light1 = Light(Vector(0,5,-10), 1);
+    Light light1 = Light(Vector(2,5,-10), 1, Vector(1,1,1), 100);
+    //Light light1 = Light(Vector(2,5,-10));
     HitList list = HitList();
     Vector p1 = Vector(0,-1,0);
     int a = std::numeric_limits<int>::max();
-    auto ground = std::make_shared<Wall>(a, a, p1, "floor",Vector(1,0.5,0.2), std::make_shared<Mate>());
-    list.Add(ground);
+
+    auto mate1 = Mate(0.1,Vector(1,1,1), 0.05, 8);
+    auto metal = Mate(0.1, Vector(1.0, 0.78, 0.34),	0.9, 64);
+    auto cera = Mate(0.1, Vector(1, 1, 1), 0.6,96);
+
+
+    auto ground = std::make_shared<Wall>(a, a, p1, "floor",Vector(1, 0.5, 0.2), mate1);
     auto ground_center = ground->getCenter();
-    auto sphere1 = std::make_shared<Sphere>(Vector(0, ground_center.getY(), -10), 1, Vector(0, 0, 1), std::make_shared<Mate>());
-    auto sphere2 = std::make_shared<Sphere>(Vector(-10, ground_center.getY(), -20), 4, Vector(1, 0, 0), std::make_shared<Mate>());
+    auto sphere1 = std::make_shared<Sphere>(Vector(5, ground_center.getY(), -10), 1, Vector(0, 0, 1), cera);
+    auto sphere2 = std::make_shared<Sphere>(Vector(-10, ground_center.getY(), -20), 4, Vector(1, 0.6, 0), metal);
+
+    list.Add(ground);
     list.Add(sphere1);
     list.Add(sphere2);
     list.Add(light1.getForm());
