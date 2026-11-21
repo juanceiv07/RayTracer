@@ -4,14 +4,14 @@
 #include "Camera.h"
 #include "Ray.h"
 #include <algorithm>
-#include <any>
-#include <cfloat>
 #include <iostream>
 #include <math.h>
 #include "Hittable.h"
 #include "Light.h"
 #include "Wall.h"
 #include <float.h>
+#include <memory>
+#include "Mate.h"
 
 Vector ray_color(const Ray& r, HitList list, Light& light) {
     std::shared_ptr<Hittable> result = list.SendRay(r);
@@ -20,12 +20,14 @@ Vector ray_color(const Ray& r, HitList list, Light& light) {
         auto a = 0.5*(-unit_direction.getY() + 1.0);
         return (1.0-a) * Vector(1.0, 1.0, 1.0) + a * Vector(0.1, 0.1, 1.0);
     }
+    if(result == light.getForm()){
+        return light.getForm()->getColor();
+    }
     auto t = result->hit(r);
     Vector intersec = r.getOrigin() + t * r.getDirection();
     Ray shadow = Ray(intersec, light.getPos());
-    auto uni_light = unit_vector(light.getPos() - intersec);
-    auto nl = dot(result->getNormal(intersec), uni_light);
-    auto k = 90 * std::max(0.0, nl)/ (light.getPos() - intersec).length_squared();
+    auto material = (result->getMaterial());
+    auto k = material->shading(light.getPos(), intersec, result->getNormal(intersec));
     if(list.SendRay(shadow)){
          return result->getColor()*0.3 * (Vector(1,1,1)*k);
     }
@@ -42,17 +44,18 @@ int main(){
     auto viewport_width  = viewport_height * (double(width) / height);
     Camera Cam = Camera(Vector(0,2,0), 2, viewport_height, viewport_width, width, height);
 
-    Light light1 = Light(Vector(10,10,-10));
+    Light light1 = Light(Vector(0,5,-10), 1);
     HitList list = HitList();
     Vector p1 = Vector(0,-1,0);
     int a = std::numeric_limits<int>::max();
-    auto ground = std::make_shared<Wall>(a, a, p1, "floor",Vector(1,0.5,0.2));
+    auto ground = std::make_shared<Wall>(a, a, p1, "floor",Vector(1,0.5,0.2), std::make_shared<Mate>());
     list.Add(ground);
     auto ground_center = ground->getCenter();
-    auto sphere1 = std::make_shared<Sphere>(Vector(0, ground_center.getY(), -10), 1, Vector(0, 0, 1));
-    auto sphere2 = std::make_shared<Sphere>(Vector(-10, ground_center.getY(), -20), 4, Vector(1, 0, 0));
+    auto sphere1 = std::make_shared<Sphere>(Vector(0, ground_center.getY(), -10), 1, Vector(0, 0, 1), std::make_shared<Mate>());
+    auto sphere2 = std::make_shared<Sphere>(Vector(-10, ground_center.getY(), -20), 4, Vector(1, 0, 0), std::make_shared<Mate>());
     list.Add(sphere1);
     list.Add(sphere2);
+    list.Add(light1.getForm());
 
     for (int  j = 0 ; j < height ; j++){
         for (int i = 0; i < width; i++){
