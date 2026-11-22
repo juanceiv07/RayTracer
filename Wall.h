@@ -18,10 +18,12 @@ class Wall : public Hittable{
     Ray ray1;
     Ray ray2;
     std::string type;
-    //Center --> vertex
-    Wall(float w, float l, Vector p, std::string pos, Vector color, Mate material): Hittable(p, color, material){
+    Vector center;
+    //Center --> vertex;
+    Wall(float w, float l, Vector p, std::string pos, Vector color, std::shared_ptr<Material> material): Hittable(p, color, material){
         width = w;
         lenght = l;
+        center = p;
         if (pos == "floor"){
             ray1 = Ray(p,Vector(1,0,0));
             ray2 = Ray(p,Vector(0,0,-1));
@@ -35,19 +37,13 @@ class Wall : public Hittable{
             ray2 = Ray(p,Vector(0,1,0));
         }
     }
-    Vector getCenter() const override{
-        return center;
-    }
-    Vector getColor() const override{
-        return color;
-    }
     float hit(const Ray& r) const override{
         Vector plane_normal = cross(ray1.getDirection(), ray2.getDirection());
         float den = (dot(r.getDirection(), plane_normal));
         if (den == 0){
             return -1;
         }
-        float d = dot((getCenter() - r.getOrigin()), plane_normal)/(den);
+        float d = dot((center - r.getOrigin()), plane_normal)/(den);
         Vector intersec = r.getOrigin() + d * r.getDirection();
         float dis1 = std::abs(dot((intersec - ray1.getOrigin()),ray1.getDirection()) / (ray1.getDirection().length()));
         float dis2 = std::abs(dot((intersec - ray2.getOrigin()),ray2.getDirection()) / (ray2.getDirection().length()));
@@ -59,10 +55,6 @@ class Wall : public Hittable{
     Vector getNormal(const Vector& hit_point) const override{
         return cross(ray1.getDirection(), ray2.getDirection());
     }
-    Mate getMaterial() const override{
-        return mater;
-    }
-
 //color = ((dis1 + dis2) % 2 == 0) ? Vector(0.9, 0.9, 0.9) : Vector(0.2, 0.2, 0.2);
 };
 

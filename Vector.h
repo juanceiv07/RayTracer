@@ -55,6 +55,10 @@ class  Vector{
     static Vector random(double min, double max) {
             return Vector(random_double(min,max), random_double(min,max), random_double(min,max));
         }
+    bool near_zero() const {
+            auto s = 1e-8;
+            return (std::fabs(coor[0]) < s) && (std::fabs(coor[1]) < s) && (std::fabs(coor[2]) < s);
+        }
 };
 inline std::ostream& operator<<(std::ostream& out, const Vector& v) {
     return out << v.coor[0] << ' ' << v.coor[1] << ' ' << v.coor[2];
@@ -99,6 +103,10 @@ inline Vector cross(const Vector& u, const Vector& v) {
 inline Vector unit_vector(const Vector& v) {
     return v / v.length();
 }
+inline Vector reflect(const Vector& v, const Vector& normal){
+    return v - 2 * dot(v, normal) * normal;
+}
+
 inline void write_color(std::ostream& out, const Vector& pixel_color) {
     auto x = pixel_color.getX();
     auto y = pixel_color.getY();

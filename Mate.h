@@ -7,28 +7,33 @@
 #include <algorithm>
 #include <cmath>
 
-class Mate{
+class Mate : public Material{
     public:
         float ka;
         Vector spec;
         float ks;
         float shiness;
-    Mate(float _ka, const Vector& _spec, float _ks, float _shiness){
+    Mate(float _ka, const Vector& _spec, float _ks, float _shiness, Vector _color): Material(_color){
         ka = _ka;
         spec = _spec;
         ks = _ks;
         shiness= _shiness;
+        color = _color;
     };
-    Vector shading(const Ray& camray, const Ray& to_light, const Vector& color, const Vector& intersec, const Vector& _normal, const Vector& light_color, float intensity) const{
-        auto env = color * ka;
-        auto d =  to_light.getDirection().length();
-        auto uni_ligth = to_light.getDirection() / d;
-        auto nl = dot(_normal, uni_ligth);
-        auto lambert =  color * light_color * intensity * std::max(0.0, nl)/ (d*d);
-        auto v = unit_vector(-camray.getDirection());
-        auto h = unit_vector(uni_ligth + v);
-        auto blinn = (spec * light_color * intensity* ks * pow(std::max(0.0, dot(h,_normal)),shiness))/(d*d);
-        return  env + lambert + blinn;
+    Vector environment() const override{
+        return color * ka;
+    }
+    bool scatter(const Ray& r, const Vector& normal, const Vector& intersec, Ray& scattered)const override{
+        return false;
+    }
+    Vector shading(const Vector& to_light, const Vector& normal, const Vector&v) const override{
+        auto d = to_light.length_squared();
+        auto uni_light = unit_vector(to_light);
+        auto nl = dot(normal, uni_light);
+        auto lambert = color * std::max(0.0, nl) / d;
+        auto h = unit_vector(uni_light + v);
+        auto blinn = spec * ks * pow(std::max(0.0, dot(h,normal)),shiness)/d;
+        return lambert + blinn;
     }
 };
 #endif

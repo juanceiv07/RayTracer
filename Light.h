@@ -18,7 +18,7 @@ class Light{
         float intensity;
     Light(const Vector& _pos, float _intensity):pos(_pos),intensity(_intensity){color = Vector(1,1,1);};
     Light(const Vector& _pos, float radius, const Vector& _color, float _intenisty):pos(_pos),color(_color), intensity(_intenisty){
-        form = std::make_shared<Sphere>(_pos, radius, Vector(1,1,1), Mate(0.1,Vector(1,1,1), 0.05, 8));
+        form = std::make_shared<Sphere>(_pos, radius, Vector(1,1,1), std::make_shared<Mate>(0.1,Vector(1,1,1), 0.05, 8, _color));
         };
     const Vector& getColor(){
         return color;

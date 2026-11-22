@@ -13,19 +13,12 @@ class Sphere : public Hittable{
     private:
         float ratio;
     public:
-        Sphere(const Vector& _center, float _ratio, const Vector& _color, Mate material): Hittable(_center, _color, material){
-            center = _center + Vector(0,_ratio,0);
+        Sphere(const Vector& _center, float _ratio, const Vector& _color, std::shared_ptr<Material> material): Hittable(_center + Vector(0, _ratio,0), _color, material){
             ratio = _ratio;
             color = _color;
         }
-        Vector getCenter() const override{
-            return center;
-        }
         float getRatio() const {
             return ratio;
-        }
-        Vector getColor() const override{
-            return color;
         }
         float hit(const Ray& ray) const override{
             auto a  = ray.getDirection().length_squared();
@@ -41,9 +34,6 @@ class Sphere : public Hittable{
         }
         Vector getNormal(const Vector& hit_point) const override{
             return (hit_point - center)/ratio;
-        }
-        Mate getMaterial() const override{
-            return mater;
         }
 };
 
