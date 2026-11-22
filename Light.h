@@ -37,8 +37,8 @@ class Light{
     std::shared_ptr<Hittable> getForm(){
         return form;
     }
-    Vector randomPoint(){
-        return form->randomPoint();
+    Vector randomPoint(const Vector& p){
+        return form->randomPoint(p);
     }
 };
 

@@ -30,9 +30,9 @@ class Mate : public Material{
         auto d = to_light.length_squared();
         auto uni_light = unit_vector(to_light);
         auto nl = dot(normal, uni_light);
-        auto lambert = color * std::max(0.0, nl) / d;
+        auto lambert = color * std::max(0.0f, nl) / d;
         auto h = unit_vector(uni_light + v);
-        auto blinn = spec * ks * pow(std::max(0.0, dot(h,normal)),shiness)/d;
+        auto blinn = spec * ks * pow(std::max(0.0f, dot(h,normal)),shiness)/d;
         return lambert + blinn;
     }
 };

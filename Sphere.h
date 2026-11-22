@@ -35,13 +35,29 @@ class Sphere : public Hittable{
         Vector getNormal(const Vector& hit_point) const override{
             return (hit_point - center)/ratio;
         }
-        Vector randomPoint() const override{
-            auto random_z = 2 * random_double(0,1) - 1;
-            auto random_t = random_double(0, 2 * M_PI);
-            auto r = std::sqrt(1 - random_z * random_z);
-            auto x = r *  cos(random_t);
-            auto y = r * sin(random_t);
-            return center + ratio * Vector(x, y, random_z);
+        Vector randomPoint(const Vector& p) const override{
+            Vector wc = unit_vector(center - p);
+            Vector wcX,wcY;
+            if (std::abs(wc.getX()) > std::abs(wc.getY()))
+                    wcX= Vector(-wc.getZ(), 0, wc.getX()) /
+                          std::sqrt(wc.getX()* wc.getX() + wc.getZ() * wc.getZ());
+            else
+                wcX = Vector(0, wc.getZ(), -wc.getY()) / std::sqrt(wc.getY() * wc.getY() + wc.getZ() * wc.getZ());
+            wcY = cross(wc, wcX);
+            float u = random_float(0,1);
+            float v = random_float(0,1);
+            float sinThetaMax = ratio * ratio / (center - p).length_squared();
+            float cosThetaMax = std::sqrt(std::max(0.0, 1.0 - sinThetaMax));
+            float cosTheta = (1.0 - u) + u * cosThetaMax;
+            float sinTheta = std::sqrt(std::max(0.0, 1.0 - cosTheta * cosTheta));
+            float phi = v * 2.0 * M_PI;
+            float dc = (center - p).length();
+            float ds = dc * cosTheta - std::sqrt(std::max(0.0f, ratio * ratio - dc * dc * sinTheta * sinTheta));
+            float cosAplha = (dc * dc + ratio * ratio - ds * ds) / (2.0 * dc * ratio);
+            float sinAlpha = std::sqrt(std::max(0.0, 1.0 - cosAplha * cosAplha));
+            auto vfinal = sinAlpha * std::cos(phi) * (-wcX) + sinAlpha * std::sin(phi) * (-wcY) + cosAplha * (-wc);
+            auto sampled_p = ratio * vfinal;
+            return center + sampled_p;
         }
 };
 

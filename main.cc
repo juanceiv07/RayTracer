@@ -31,7 +31,7 @@ Vector ray_color(const Ray& r, HitList list, Light& light, int depth) {
     Vector intersec = r.getOrigin() + t * r.getDirection();
     auto normal = result->getNormal(intersec);
 
-    Ray shadow = Ray(intersec, light.randomPoint() - intersec);
+    Ray shadow = Ray(intersec, light.randomPoint(intersec) - intersec);
 
     auto material = (result->getMaterial());
     auto final = light.getColor() * light.getIntensity() * material->shading(shadow.getDirection(), normal, -r.getDirection()) + material->environment();
@@ -57,7 +57,7 @@ int main(){
     auto viewport_width  = viewport_height * (double(width) / height);
     Camera Cam = Camera(Vector(0,2,10), 2, viewport_height, viewport_width, width, height);
 
-    Light light1 = Light(Vector(2,5,-10), 1, Vector(1,1,1), 100);
+    Light light1 = Light(Vector(0,5,-10), 1, Vector(1,1,1), 100);
     Light light2 = Light(Vector(-2,10,-15), 10 ,10 , "floor", Vector(1,1,1), 100);
 
     HitList list = HitList();

@@ -55,13 +55,13 @@ class Wall : public Hittable{
     Vector getNormal(const Vector& hit_point) const override{
         return cross(ray1.getDirection(), ray2.getDirection());
     }
-    Vector randomPoint() const override{
-        auto rx = random_double(center.getX(), center.getX() + width);
-        auto ry = random_double(center.getY(), center.getY() + width);
-        auto rz = random_double(center.getZ(), center.getZ() + width);
-        auto xf = random_double(rx, lenght);
-        auto yf = random_double(ry, lenght);
-        auto zf = random_double(rz, lenght);
+    Vector randomPoint(const Vector& p) const override{
+        auto rx = random_float(center.getX(), center.getX() + width);
+        auto ry = random_float(center.getY(), center.getY() + width);
+        auto rz = random_float(center.getZ(), center.getZ() + width);
+        auto xf = random_float(rx, lenght);
+        auto yf = random_float(ry, lenght);
+        auto zf = random_float(rz, lenght);
         return Vector(xf, yf, zf);
     }
 //color = ((dis1 + dis2) % 2 == 0) ? Vector(0.9, 0.9, 0.9) : Vector(0.2, 0.2, 0.2);

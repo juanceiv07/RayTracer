@@ -10,18 +10,18 @@
 
 class  Vector{
   public:
-    double coor[3];
+    float coor[3];
 
     Vector() : coor{0,0,0} {}
-    Vector(double co0, double co1, double co2) : coor{co0, co1, co2} {}
+    Vector(float co0, float co1, float co2) : coor{co0, co1, co2} {}
 
-    double getX() const { return coor[0]; }
-    double getY() const { return coor[1]; }
-    double getZ() const { return coor[2]; }
+    float getX() const { return coor[0]; }
+    float getY() const { return coor[1]; }
+    float getZ() const { return coor[2]; }
 
     Vector operator-() const { return Vector(-coor[0], -coor[1], -coor[2]); }
-    double operator[](int i) const { return coor[i]; }
-    double& operator[](int i) { return coor[i]; }
+    float operator[](int i) const { return coor[i]; }
+    float& operator[](int i) { return coor[i]; }
 
     Vector& operator+=(const Vector& v) {
         coor[0] += v.coor[0];
@@ -30,30 +30,30 @@ class  Vector{
         return *this;
     }
 
-    Vector& operator*=(double t) {
+    Vector& operator*=(float t) {
         coor[0] *= t;
         coor[1] *= t;
         coor[2] *= t;
         return *this;
     }
 
-    Vector& operator/=(double t) {
+    Vector& operator/=(float t) {
         return *this *= 1/t;
     }
 
-    double length() const {
+    float length() const {
         return std::sqrt(length_squared());
     }
 
-    double length_squared() const {
+    float length_squared() const {
         return coor[0]*coor[0] + coor[1]*coor[1] + coor[2]*coor[2];
     }
     static Vector random() {
-            return Vector(random_double(), random_double(), random_double());
+            return Vector(random_float(), random_float(), random_float());
         }
 
-    static Vector random(double min, double max) {
-            return Vector(random_double(min,max), random_double(min,max), random_double(min,max));
+    static Vector random(float min, float max) {
+            return Vector(random_float(min,max), random_float(min,max), random_float(min,max));
         }
     bool near_zero() const {
             auto s = 1e-8;
@@ -76,19 +76,19 @@ inline Vector operator*(const Vector& u, const Vector& v) {
     return Vector(u.coor[0] * v.coor[0], u.coor[1] * v.coor[1], u.coor[2] * v.coor[2]);
 }
 
-inline Vector operator*(double t, const Vector& v) {
+inline Vector operator*(float t, const Vector& v) {
     return Vector(t*v.coor[0], t*v.coor[1], t*v.coor[2]);
 }
 
-inline Vector operator*(const Vector& v, double t) {
+inline Vector operator*(const Vector& v, float t) {
     return t * v;
 }
 
-inline Vector operator/(const Vector& v, double t) {
+inline Vector operator/(const Vector& v, float t) {
     return (1/t) * v;
 }
 
-inline double dot(const Vector& u, const Vector& v) {
+inline float dot(const Vector& u, const Vector& v) {
     return u.coor[0] * v.coor[0]
          + u.coor[1] * v.coor[1]
          + u.coor[2] * v.coor[2];

@@ -22,7 +22,7 @@ class Hittable{
         std::shared_ptr<Material> getMaterial(){
             return mater;
         }
-        virtual Vector randomPoint() const = 0;
+        virtual Vector randomPoint(const Vector& p) const = 0;
 };
 
 #endif
