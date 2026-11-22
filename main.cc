@@ -39,7 +39,6 @@ Vector ray_color(const Ray& r, HitList list, Light& light, int depth) {
         return final *  ray_color(scattered, list, light, depth -1);
     }
     auto block = list.SendRay(shadow);
-    block = list.SendRay(shadow);
     if(block && block != light.getForm()){
          return 0.2 * final;
     }
@@ -49,7 +48,7 @@ Vector ray_color(const Ray& r, HitList list, Light& light, int depth) {
 int main(){
 
     auto aspect_ratio = 16.0 / 9.0;
-    int width = 1000;
+    int width = 1080;
     int height = std::max(int(width/aspect_ratio),1);
     std::cout << "P3\n" << width << ' ' << height << "\n255\n";
     auto viewport_height = 2.0;
@@ -64,13 +63,13 @@ int main(){
 
     auto mate1 = std::make_shared<Mate>(0.1,Vector(1,1,1), 0.05, 8, Vector(0.8,0.5,0));
     auto cera = std::make_shared<Mate>(0.1, Vector(1, 1, 1), 0.6,96, Vector(0,0,1));
-    auto metal1 = std::make_shared<Metal>(2,Vector(0.8,0,0));
+    auto metal1 = std::make_shared<Metal>(2,Vector(1,1,1));
 
 
-    auto ground = std::make_shared<Wall>(a, a, p1, "floor",Vector(1, 0.5, 0.2), mate1);
+    auto ground = std::make_shared<Wall>(a, a, p1, "floor", mate1);
     auto ground_center = ground->getCenter();
-    auto sphere1 = std::make_shared<Sphere>(Vector(5, ground_center.getY(), -10), 1, Vector(0, 0, 1), cera);
-    auto sphere2 = std::make_shared<Sphere>(Vector(-10, ground_center.getY(), -20), 4, Vector(1, 0.6, 0), metal1);
+    auto sphere1 = std::make_shared<Sphere>(Vector(5, ground_center.getY(), -10), 1, cera);
+    auto sphere2 = std::make_shared<Sphere>(Vector(-10, ground_center.getY(), -20), 4, metal1);
 
     list.Add(ground);
     list.Add(sphere1);

@@ -20,7 +20,7 @@ class Wall : public Hittable{
     std::string type;
     Vector center;
     //Center --> vertex;
-    Wall(float w, float l, Vector p, std::string pos, Vector color, std::shared_ptr<Material> material): Hittable(p, color, material){
+    Wall(float w, float l, Vector p, std::string pos, std::shared_ptr<Material> material): Hittable(p, material){
         width = w;
         lenght = l;
         center = p;
