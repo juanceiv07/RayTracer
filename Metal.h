@@ -10,7 +10,7 @@ class Metal: public Material{
     float fuzz;
     float ks = 0.4f;
     float shiness = 64;
-    float ka = 0.01;
+    float ka = 0.001;
     Metal(float _fuzz,  const Vector& _color): Material(_color), fuzz(_fuzz){}
     Vector environment() const override{
         return color * ka;

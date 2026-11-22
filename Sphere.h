@@ -3,6 +3,7 @@
 
 #include "Hittable.h"
 #include "Material.h"
+#include "Utillities.h"
 #include "Vector.h"
 #include "Ray.h"
 #include <algorithm>
@@ -13,9 +14,8 @@ class Sphere : public Hittable{
     private:
         float ratio;
     public:
-        Sphere(const Vector& _center, float _ratio, const Vector& _color, std::shared_ptr<Material> material): Hittable(_center + Vector(0, _ratio,0), _color, material){
+        Sphere(const Vector& _center, float _ratio, std::shared_ptr<Material> material): Hittable(_center + Vector(0, _ratio,0), material){
             ratio = _ratio;
-            color = _color;
         }
         float getRatio() const {
             return ratio;
@@ -34,6 +34,14 @@ class Sphere : public Hittable{
         }
         Vector getNormal(const Vector& hit_point) const override{
             return (hit_point - center)/ratio;
+        }
+        Vector randomPoint() const override{
+            auto random_z = 2 * random_double(0,1) - 1;
+            auto random_t = random_double(0, 2 * M_PI);
+            auto r = std::sqrt(1 - random_z * random_z);
+            auto x = r *  cos(random_t);
+            auto y = r * sin(random_t);
+            return center + ratio * Vector(x, y, random_z);
         }
 };
 

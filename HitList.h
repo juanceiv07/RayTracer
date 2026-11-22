@@ -18,7 +18,7 @@ class HitList{
       void Add(std::shared_ptr<Hittable> object){
           hittables.push_back(object);
       }
-      std::shared_ptr<Hittable> SendRay(const Ray& r){
+      std::shared_ptr<Hittable> SendRay(const Ray& r, float& t){
           float t_min = std::numeric_limits<double>::infinity();
           std::shared_ptr<Hittable> nearest;
           for(size_t i = 0 ; i < hittables.size(); i++ ){
@@ -28,6 +28,7 @@ class HitList{
                   nearest = hittables.at(i);
               }
           }
+          t = t_min;
           return nearest;
       }
 

@@ -20,7 +20,7 @@ class Wall : public Hittable{
     std::string type;
     Vector center;
     //Center --> vertex;
-    Wall(float w, float l, Vector p, std::string pos, Vector color, std::shared_ptr<Material> material): Hittable(p, color, material){
+    Wall(float w, float l, Vector p, std::string pos, std::shared_ptr<Material> material): Hittable(p, material){
         width = w;
         lenght = l;
         center = p;
@@ -54,6 +54,15 @@ class Wall : public Hittable{
     }
     Vector getNormal(const Vector& hit_point) const override{
         return cross(ray1.getDirection(), ray2.getDirection());
+    }
+    Vector randomPoint() const override{
+        auto rx = random_double(center.getX(), center.getX() + width);
+        auto ry = random_double(center.getY(), center.getY() + width);
+        auto rz = random_double(center.getZ(), center.getZ() + width);
+        auto xf = random_double(rx, lenght);
+        auto yf = random_double(ry, lenght);
+        auto zf = random_double(rz, lenght);
+        return Vector(xf, yf, zf);
     }
 //color = ((dis1 + dis2) % 2 == 0) ? Vector(0.9, 0.9, 0.9) : Vector(0.2, 0.2, 0.2);
 };
