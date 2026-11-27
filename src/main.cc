@@ -90,7 +90,8 @@ int main(){
             auto pixel_center = Cam.pixel0() + (i * Cam.deltaU()) + (j * Cam.deltaV());
             auto ray_direction = pixel_center - Cam.CamerCenter();
             Ray r(Cam.CamerCenter(), ray_direction);
-            auto pixel_color = ray_color(r, list, light1, 5);            write_color(std::cout ,pixel_color);
+            auto pixel_color = ray_color(r, list, light1, 5);
+            write_color(std::cout ,pixel_color);
         }
     }
 }
