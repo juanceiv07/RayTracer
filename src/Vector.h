@@ -120,10 +120,9 @@ inline void write_color(std::ostream& out, const Vector& pixel_color, Image& ima
     g = sqrt(g);
     b = sqrt(b);
 
-    image.set(r, g, b, i, j);
-
     int rbyte = int(255.999 * r);
     int gbyte = int(255.999 * g);
     int bbyte = int(255.999 * b);
+    image.set(rbyte, gbyte, bbyte, i, j);
 }
 #endif

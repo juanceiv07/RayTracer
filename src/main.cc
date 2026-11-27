@@ -11,22 +11,30 @@
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
-    "out vec4 vertexColor;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+    "layout (location = 2) in vec2 aTexCoord;\n"
+
+    "out vec3 ourColor;\n"
+    "out vec2 TexCoord;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos, 1.0);\n"
-    "   vertexColor = vec4(0.0, 0.0, 0.8, 0.5);\n"
+    "   ourColor = aColor;\n"
+    "   TexCoord = aTexCoord;\n"
     "}\0";
 
 
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
-    "uniform vec4 uniColor = vec4(0.0, 0.8, 0.8, 0.2);\n"
+
+    "in vec3 ourColor;\n"
+    "in vec2 TexCoord;\n"
+    "uniform sampler2D ourTexture;\n"
     "void main()\n"
     "{\n"
-    "    FragColor = uniColor;\n"
+    "    FragColor = texture(ourTexture, vec2(TexCoord.x, 1 - TexCoord.y));\n"
+    "    //FragColor = vec4(0.8, 0.0, 0.8, 0.5);\n"
     "}\0";
-
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
@@ -47,7 +55,7 @@ int main(){
     Image image1 = Image(width_i, height_i);
     gen_image(image1);
 
-    int width = 800;
+    int width = 1000;
     int height = 600;
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //versions for opengl
@@ -65,37 +73,6 @@ int main(){
     }
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    float vertices[] = {
-        -0.5f, -0.8f, 0.0f, //bl
-        -0.2f, -0.8f, 0.0f, //br
-        -0.2f,  0.8f, 0.0f, //tr
-         -0.5f, 0.8f, 0.0f, //tl
-         0.5f, 0.8f, 0.0f, //rec1l
-         -0.2f, 0.5f, 0.0f,
-         0.5f, 0.5f, 0.0f,
-         -0.2f, 0.2f, 0.0f, //srecini
-         0.5f, 0.2f, 0.0f, //lefrec2
-         0.5f, -0.1f, 0.0f,
-         -0.2f, -0.1f, 0.0f
-    };
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 3, 2,
-        2, 4, 5,
-        4, 5, 6,
-        7, 8, 9,
-        10, 9, 7
-    };
-    //Vertex Buffer Objects
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-
 
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -124,46 +101,75 @@ int main(){
     glUseProgram(shaderProgram);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // 0. copy our vertices array in a buffer for OpenGL to use
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // 1. then set the vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // 2. use our shader program when we want to render an object
     glUseProgram(shaderProgram);
+    float vertices[] = {
+        // positions          // colors           // texture coords
+         1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         1.0f,  -1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+         -1.0f,  -1.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+         -1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+    };
 
-    //Vertex Array Objects
-
-    unsigned int VAO;
+    unsigned int indices[] = {
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+        };
+    //Vertex Buffer Objects
+    unsigned int VBO, EBO, VAO;
     glGenVertexArrays(1, &VAO);
-    // 1. Blind
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
     glBindVertexArray(VAO);
-    // 2. copy our vertices array in a buffer for OpenGL to use
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    // 3. then set our vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
 
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // texture coord attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    int width2 = image1.getWidth();
+    int height2 = image1.getHeight();
+    auto data = image1.data();
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
 
     while(!glfwWindowShouldClose(window)){
         processInput(window);
 
         glClearColor(0.9f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        glBindTexture(GL_TEXTURE_2D, texture);
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 18,GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
