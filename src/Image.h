@@ -13,7 +13,7 @@ class Image{
     int getWidth(){return width;}
     int getHeight(){return height;}
     void set(uint8_t r, uint8_t g, uint8_t b, int x, int y){
-        size_t i = x * y;
+        size_t i = (size_t(y) * width + x) * 4;
         px_[i] = r;
         px_[i+1] = g;
         px_[i+2] = b;

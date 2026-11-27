@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include <random>
+#include "Image.h"
 #include "Utillities.h"
 #include <float.h>
 
@@ -107,7 +108,7 @@ inline Vector reflect(const Vector& v, const Vector& normal){
     return v - 2 * dot(v, normal) * normal;
 }
 
-inline void write_color(std::ostream& out, const Vector& pixel_color) {
+inline void write_color(std::ostream& out, const Vector& pixel_color, Image& image, int i, int j) {
     auto x = pixel_color.getX();
     auto y = pixel_color.getY();
     auto z = pixel_color.getZ();
@@ -119,9 +120,10 @@ inline void write_color(std::ostream& out, const Vector& pixel_color) {
     g = sqrt(g);
     b = sqrt(b);
 
+    image.set(r, g, b, i, j);
+
     int rbyte = int(255.999 * r);
     int gbyte = int(255.999 * g);
     int bbyte = int(255.999 * b);
-    out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
 }
 #endif
