@@ -1,7 +1,6 @@
 #ifndef CPU_H
 #define CPU_H
 
-
 #include "HitList.h"
 #include "Image.h"
 #include "Metal.h"
@@ -19,7 +18,7 @@
 #include <memory>
 #include "Mate.h"
 
-Vector ray_color(const Ray& r, HitList list, Light& light, int depth) {
+Vector ray_color(const Ray& r, const HitList& list, Light& light, int depth) {
     if (depth <= 0){
         return Vector(0,0,0);
     }
@@ -35,11 +34,10 @@ Vector ray_color(const Ray& r, HitList list, Light& light, int depth) {
     }
     Vector intersec = r.getOrigin() + t * r.getDirection();
     auto normal = result->getNormal(intersec);
-
     Ray shadow = Ray(intersec, light.randomPoint(intersec) - intersec);
-
     auto material = (result->getMaterial());
-    auto final = light.getColor() * light.getIntensity() * material->shading(shadow.getDirection(), normal, -r.getDirection()) + material->environment();
+    auto final = material->environment();
+    final += light.getColor() * light.getIntensity() * material->shading(shadow.getDirection(), normal, -r.getDirection());
     Ray scattered;
     if (material->scatter(r, normal, intersec, scattered)){
         return final *  ray_color(scattered, list, light, depth -1);
@@ -52,14 +50,11 @@ Vector ray_color(const Ray& r, HitList list, Light& light, int depth) {
     return final;
 }
 
-void gen_image(Image& img){
+void gen_image(Image& img, const Camera& Cam){
 
-    auto aspect_ratio = 16.0 / 9.0;
-    int width = 1080;
-    int height = std::max(int(width/aspect_ratio),1);
-    auto viewport_height = 2.0;
-    auto viewport_width  = viewport_height * (double(width) / height);
-    Camera Cam = Camera(Vector(0,2,10), 2, viewport_height, viewport_width, width, height);
+    int width = img.getWidth();
+    int height = img.getHeight();
+
 
     Light light1 = Light(Vector(0,5,-10), 1, Vector(1,1,1), 100);
     Light light2 = Light(Vector(-2,10,-15), 10 ,10 , "floor", Vector(1,1,1), 100);
@@ -88,13 +83,14 @@ void gen_image(Image& img){
     list.Add(light1.getForm());
     list.Add(sphere3);
     list.Add(wall1);
+    #pragma omp parallel for schedule(dynamic, 4)
     for (int  j = 0 ; j < height ; j++){
         for (int i = 0; i < width; i++){
             auto pixel_center = Cam.pixel0() + (i * Cam.deltaU()) + (j * Cam.deltaV());
             auto ray_direction = pixel_center - Cam.CamerCenter();
             Ray r(Cam.CamerCenter(), ray_direction);
             auto pixel_color = ray_color(r, list, light1, 5);
-            write_color(std::cout ,pixel_color,img, i, j);
+            write_color(pixel_color,img, i, j);
         }
     }
 }

@@ -4,12 +4,14 @@
 #include "Hittable.h"
 #include "Ray.h"
 #include "Vector.h"
+#include <functional>
 #include <memory>
 #include <vector>
 
 class HitList{
   public:
       std::vector<std::shared_ptr<Hittable>> hittables;
+
       HitList(){};
       HitList(std::vector<std::shared_ptr<Hittable>> list): hittables(list){};
       void Clear(){
@@ -18,7 +20,17 @@ class HitList{
       void Add(std::shared_ptr<Hittable> object){
           hittables.push_back(object);
       }
-      std::shared_ptr<Hittable> SendRay(const Ray& r, float& t){
+      bool blocking(const Ray&r, float tmax) const{
+          for(size_t i = 0 ; i < hittables.size(); i++ ){
+              if (hittables[i]->isEmissive()){continue;}
+              float t = hittables[i]->hit(r);
+              if(t > 0.001 && t < tmax){
+                  return true;
+              }
+          }
+          return false;
+      }
+      std::shared_ptr<Hittable> SendRay(const Ray& r, float& t) const{
           float t_min = std::numeric_limits<double>::infinity();
           std::shared_ptr<Hittable> nearest;
           for(size_t i = 0 ; i < hittables.size(); i++ ){

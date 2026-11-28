@@ -25,20 +25,23 @@ class Light{
     Light(const Vector& _pos, float w, float l, std::string direc, Vector _color, float _intensity):pos(_pos),color(_color), intensity(_intensity){
         form = std::make_shared<Wall>(w, l, _pos, direc, std::make_shared<Mate>(0.1,Vector(1,1,1), 0.05, 8, _color));
     }
-    const Vector& getColor(){
+    const Vector& getColor() const{
         return color;
     }
-    const Vector& getPos(){
+    const Vector& getPos() const{
         return pos;
     }
-    float getIntensity(){
+    float getIntensity() const{
         return intensity;
     }
-    std::shared_ptr<Hittable> getForm(){
+    std::shared_ptr<Hittable> getForm() const{
         return form;
     }
-    Vector randomPoint(const Vector& p){
+    Vector randomPoint(const Vector& p) const{
         return form->randomPoint(p);
+    }
+    bool isEmissive() const{
+        return true;
     }
 };
 

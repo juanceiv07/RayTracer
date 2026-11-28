@@ -23,6 +23,7 @@ class Hittable{
             return mater;
         }
         virtual Vector randomPoint(const Vector& p) const = 0;
+        virtual bool isEmissive() const {return false;}
 };
 
 #endif

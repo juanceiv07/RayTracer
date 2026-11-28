@@ -4,3 +4,5 @@ plan.txt
 sh1.glsl
 sh2.glsl
 test.glsl
+perf.data
+perf.data.old

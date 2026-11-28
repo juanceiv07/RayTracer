@@ -7,6 +7,7 @@
 #include <iostream>
 #include "Image.h"
 #include "CPU.h"
+#include "Vector.h"
 
 
 const char *vertexShaderSource = "#version 330 core\n"
@@ -49,11 +50,15 @@ void processInput(GLFWwindow *window)
 
 int main(){
     auto aspect_ratio = 16.0 / 9.0;
-    int width_i = 1080;
+    int width_i = 720;
     int height_i= std::max(int(width_i/aspect_ratio),1);
 
+    auto viewport_height = 2.0;
+    auto viewport_width  = viewport_height * (double(width_i) / height_i);
+    Camera Cam = Camera(Vector(0,2,10), 2, viewport_height, viewport_width, width_i, height_i, Vector(0, 0, -10));
+
     Image image1 = Image(width_i, height_i);
-    gen_image(image1);
+    gen_image(image1, Cam);
 
     int width = 1000;
     int height = 600;
@@ -61,7 +66,7 @@ int main(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //versions for opengl
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(width, height, "First window", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, "Ray Tracer", NULL, NULL);
     if (window == NULL){
         glfwTerminate();
         return -1;
@@ -114,7 +119,6 @@ int main(){
             0, 1, 3, // first triangle
             1, 2, 3  // second triangle
         };
-    //Vertex Buffer Objects
     unsigned int VBO, EBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -153,7 +157,7 @@ int main(){
     auto data = image1.data();
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, width2, height2, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -161,12 +165,21 @@ int main(){
         std::cout << "Failed to load texture" << std::endl;
     }
 
+
+    const float radius = 35.0f;
     while(!glfwWindowShouldClose(window)){
+        float camX = Cam.getTarget().getX() + sin(glfwGetTime()) * radius;
+        float camZ = Cam.getTarget().getZ() + cos(glfwGetTime()) * radius;
+        Cam.setX(camX);
+        Cam.setZ(camZ);
+        Cam.update();
+        gen_image(image1, Cam);
         processInput(window);
 
         glClearColor(0.9f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glBindTexture(GL_TEXTURE_2D, texture);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width2, height2, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, image1.data());
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

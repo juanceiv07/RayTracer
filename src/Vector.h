@@ -108,7 +108,7 @@ inline Vector reflect(const Vector& v, const Vector& normal){
     return v - 2 * dot(v, normal) * normal;
 }
 
-inline void write_color(std::ostream& out, const Vector& pixel_color, Image& image, int i, int j) {
+inline void write_color(const Vector& pixel_color, Image& image, int i, int j) {
     auto x = pixel_color.getX();
     auto y = pixel_color.getY();
     auto z = pixel_color.getZ();
@@ -123,6 +123,6 @@ inline void write_color(std::ostream& out, const Vector& pixel_color, Image& ima
     int rbyte = int(255.999 * r);
     int gbyte = int(255.999 * g);
     int bbyte = int(255.999 * b);
-    image.set(rbyte, gbyte, bbyte, i, j);
+    image.set(bbyte, gbyte, rbyte, i, j);
 }
 #endif
